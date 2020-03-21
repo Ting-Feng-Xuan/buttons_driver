@@ -1,0 +1,14 @@
+/* File Description: these files provide interfaces of button.
+ * 	Support long press, single click detection.
+ *	Custom handling events.
+ * Before Using:
+	you should achieve four functions£¬example use W600 platform.
+ * 	A: btn_malloc() Apply for memory space. 	
+ * 	B: btn_free() 	release memory space.
+ * 	C: demo_get_gpio_press() detecting hardware pin levels.
+ *  D: demo_button_conf()	config pin.
+ * How to use:
+ * First: Create button by called button_create.
+ * Second: register function handle of button event by called btn_event_register.
+ * At last: cyclle called the btn_main_cycle() and btn_event_handl() by order.
+ */
