@@ -10,11 +10,6 @@ struct btn_info *head = NULL;
 
 struct btn_info *btn_queue = NULL;
 
-bool IsEmpty(LinkQueue *queue)
-{
- 	return 0;
-}
-
 void enqueue(struct btn_info *btn)
 {
 	struct btn_info *q = (struct btn_info *)btn_malloc(sizeof(struct btn_info));
