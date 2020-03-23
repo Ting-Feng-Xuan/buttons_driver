@@ -70,15 +70,15 @@ void button_create(const char * name,unsigned char port,unsigned char level)
 		printf("button name is invalid!\n");
 		return;
 	}
-	if(port <= 0 || port >= 255)
+	struct btn_info *p = head;
+	while(p)
 	{
-		printf("gpio port is invalid!\n");
-		return;
-	}
-	if(level < 0 || level > 1)
-	{
-		printf("level is invalid!\n");
-		return;
+		if(strcmp(p->name,name) == 0)
+		{
+			printf("button: %s has bean existed!\n",p->name);
+			return;
+		}
+		p = p->next;
 	}
 	struct btn_info *btn = (struct btn_info *)btn_malloc(sizeof(struct btn_info));
 	if(btn == NULL)
@@ -130,19 +130,35 @@ static void button_add(struct btn_info *btn)
 
 void button_delete_by_name(const char * name)
 {
-	struct btn_info *btn = head->next;
-	while(btn)
+	struct btn_info *btn = head;
+	if(btn == NULL)
 	{
-		if(strcmp(btn->name,name) == 0)
+		printf("There are no buttons!\n");
+		return;
+	}
+	if(strcmp(btn->name,name) == 0)//if it is head node.
+	{
+		head = head->next;
+		btn_free(btn);
+		DEBUG_PRINT("%s delete success!",name);
+		return;
+	}
+	while(btn->next)
+	{
+		
+		if(strcmp(btn->next->name,name) == 0)
 			break;
 		btn = btn->next;
 	}
-	if(btn)
+	if(btn->next)
 	{
-		btn_free(btn);
+		struct btn_info *p = btn->next;
+		btn->next = p->next;
+		p->next = NULL;
+		btn_free(p);
 		DEBUG_PRINT("%s delete success!",name);
 	}
-	else
+	else 
 	{
 		DEBUG_PRINT("%s not found!",name);
 	}
