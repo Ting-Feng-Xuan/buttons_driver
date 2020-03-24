@@ -26,6 +26,7 @@ void enqueue(struct btn_info *btn)
 	if(NULL == btn_queue)
 	{
 		btn_queue = q;
+		btn_queue->next = NULL;
 	}
 	else
 	{
