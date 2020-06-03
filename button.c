@@ -92,6 +92,7 @@ void button_create(const char * name,unsigned char port,unsigned char level)
 	strcpy(btn->name,name);
 	btn->port = port;
 	btn->trig_level = level;
+	btn->last_status = NO_PRESS;
 	
 	button_add(btn);
 	demo_button_conf(port,level)；
@@ -114,6 +115,7 @@ static void demo_button_conf(int port,char level)
 	}
 	
 }
+
 static void button_add(struct btn_info *btn)
 {
 	struct btn_info *pbtn = head->next;
@@ -128,7 +130,29 @@ static void button_add(struct btn_info *btn)
 		head = btn;
 	}
 }
-
+int btn_status_get_by_name(const char * name)
+{
+	if(!name)
+	{
+		printf("button:name is not given!\n");
+		return NULL;
+	}
+	struct btn_info *btn = head;
+	while(btn)
+	{
+		if(strcmp(btn->name,name) == 0)
+		{
+			break;
+		}
+		btn = btn->next;
+	}
+	if(!btn)
+	{
+		printf("button: no button named: %s\n",name);
+		return NULL;
+	}
+	return btn->last_status;
+}
 void button_delete_by_name(const char * name)
 {
 	struct btn_info *btn = head;
@@ -222,6 +246,10 @@ static void check_btn_status(struct btn_info *btn)
 			{
 				btn->last_status = PRESS_DOWN;
 			}
+			else
+			{
+				btn->btn_cnt = 0;
+			}
 		break;
 		case PRESS_UP:
 
@@ -233,6 +261,7 @@ static void check_btn_status(struct btn_info *btn)
 			else
 			{
 				btn->last_status = NO_PRESS;
+				btn->btn_cnt = 0;
 			}
 		break;
 		case PRESS_DOWN:
@@ -242,23 +271,19 @@ static void check_btn_status(struct btn_info *btn)
 				if(btn->btn_cnt < LONG_TRIG_TIME)
 				{
 					btn->btn_trig_event = SIGNLE_CLICK;
-					btn->btn_cnt = 0;
 				}
-				else
+				else if(btn->btn_cnt == LONG_TRIG_TIME)
 				{
 					btn->btn_trig_event = LONG_PRESS;
-					btn->btn_cnt = 0;
 				}
-				
+				btn->btn_cnt = 0;
 			}
 			else if(btn->cur_status == PRESS_DOWN)
 			{
 				btn->last_status = PRESS_DOWN;
-				if(btn->btn_cnt >= LONG_TRIG_TIME)
+				if(btn->btn_cnt % LONG_TRIG_TIME == 0)
 				{
 					btn->btn_trig_event = LONG_PRESS;
-					btn->btn_cnt = 0;
-				
 				}
 			}
 			btn->last_status = btn->cur_status;
